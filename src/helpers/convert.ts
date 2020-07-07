@@ -6,7 +6,7 @@ function queryToState(query:string) {
     if (query == null || query.length === 0) {
         return {};
     }
-    const origin = (window as any).origin = parseQuery(query);
+    const origin = parseQuery(query);
     const obj = {};
     Object.keys(origin).forEach(key => {
         obj[key] = parseType(origin[key]);

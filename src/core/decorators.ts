@@ -1,7 +1,7 @@
 import { pick, difference } from "../helpers/util";
 import { getStateFromURL, syncStateToURL } from "../helpers/convert";
 
-export function callback() {
+export function syncQueryCb() {
     return function (target: any, propertyKey: string) {
         target.callback = propertyKey;
     };
@@ -9,7 +9,19 @@ export function callback() {
 
 const __STATE_DIFF_AOP_IGNORE__ = '__STATE_DIFF_AOP_IGNORE__';
 
-export function iiHOC(WrappedComponent, stateList: string[], callback?:string) {
+export function SyncQueryFactory(stateList: string[], callback?:string) {
+    return function(WrappedComponent) {
+        return syncQueryHOC(WrappedComponent, stateList, callback);
+    }
+}
+
+/**
+ * syncQueryHOC
+ * @param WrappedComponent 
+ * @param stateList states are observed
+ * @param callback callback would be called when state difference is detected
+ */
+export function syncQueryHOC(WrappedComponent, stateList?: string[], callback?:string) : any{
     return class Enhancer extends WrappedComponent {
         constructor(param) {
             super(param);
@@ -25,7 +37,7 @@ export function iiHOC(WrappedComponent, stateList: string[], callback?:string) {
             ) {
                 if (typeof this.callback === 'string'
                     && this.callback.length > 0) { 
-                    console.log('callback will be replaced by this.callback');
+                    console.warn('callback will be replaced by this.callback');
                 }
                 callback = this.callback;
             }
