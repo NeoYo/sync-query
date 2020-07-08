@@ -7,7 +7,7 @@ export function syncQueryCb() {
     };
 }
 
-const __STATE_DIFF_AOP_IGNORE__ = '__STATE_DIFF_AOP_IGNORE__';
+const __SYNC_QUERY_DIFF_IGNORE__ = '__SYNC_QUERY_DIFF_IGNORE__';
 
 export function SyncQueryFactory(stateList: string[], callback?:string) {
     return function(WrappedComponent) {
@@ -29,9 +29,9 @@ export function syncQueryHOC(WrappedComponent, stateList?: string[], callback?:s
                 ...this.state,
                 ...getStateFromURL(),
             }
-            this.reBoundCallback();
+            this.reBindCallback();
         }
-        reBoundCallback() {
+        reBindCallback() {
             if (typeof this.callback === 'string'
                 && this.callback.length > 0
             ) {
@@ -41,44 +41,68 @@ export function syncQueryHOC(WrappedComponent, stateList?: string[], callback?:s
                 }
                 callback = this.callback;
             }
+            if (callback == null) {
+                return;
+            }
+            if (typeof super[callback] !== 'function') {
+                console.error('sync-query: callback must be react component method name or be null');
+                return;
+            }
             const clone = Object.create(this);
-            let self = this;
-            clone.setState = function (val) {
-                self.setState({
+            clone.setState = (val) => {
+                this.setState({
                     ...val,
-                    __STATE_DIFF_AOP_IGNORE__: true,
+                    __SYNC_QUERY_DIFF_IGNORE__: true,
                 });
             }
             // super[callback] is super.prototype[callback], so it is not bound with _super.
             this[callback] = super[callback].bind(clone);
         }
         componentDidUpdate(prevProps, prevState) {
-            if (this.state[__STATE_DIFF_AOP_IGNORE__] === true) {
-                return super.componentDidUpdate(prevProps, prevState);
+            if (this.state[__SYNC_QUERY_DIFF_IGNORE__] === true) {
+                return (
+                    super.componentDidUpdate &&
+                    super.componentDidUpdate(prevProps, prevState)
+                );
             }
             const pickedPrevState = pick(prevState, stateList);
             const pickedState = pick(this.state, stateList);
             const diffState = difference(pickedPrevState, pickedState);
             let isDiff = Object.keys(diffState).length > 0;
             if (isDiff) {
-                this[callback]();
+                this[callback] && typeof this[callback] === 'function' && this[callback]();
                 console.log('pickedState: ', pickedState);
                 syncStateToURL(pickedState)
             }
-            return super.componentDidUpdate(prevProps, prevState);
+            return (
+                super.componentDidUpdate &&
+                super.componentDidUpdate(prevProps, prevState)
+            );
         }
-        setState(state) {
-            // TODO: add setState callback
-            // TODO: add setState firstParam when callback https://zh-hans.reactjs.org/docs/react-component.html#setstate
-            if (state[__STATE_DIFF_AOP_IGNORE__] === true) {
-                // console.log('__STATE_DIFF_AOP_IGNORE__: true...');
-                return super.setState(state);
-            } else {
-                return super.setState({
-                    ...state,
-                    __STATE_DIFF_AOP_IGNORE__: false,
-                });
+        // TODO: Unit Test Jest React
+        setState(updater, callback?:() => void) {
+            // Ref: https://zh-hans.reactjs.org/docs/react-component.html#setstate
+            if (typeof updater === 'object') {
+                return super.setState(
+                    this.getLockedState(updater),
+                    callback,
+                );
             }
+            if (typeof updater === 'function') {
+                return super.setState(
+                    function (state, props) {
+                        return this.getLockedState(updater(state, props));
+                    },
+                    callback,
+                );
+            }
+            return super.setState(updater, callback);
+        }
+        private getLockedState(state:object) {
+            return {
+                ...state,
+                [__SYNC_QUERY_DIFF_IGNORE__]: state[__SYNC_QUERY_DIFF_IGNORE__] || false
+            };
         }
     }
 }

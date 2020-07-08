@@ -10,7 +10,8 @@ function queryToState(query:string) {
     const obj = {};
     Object.keys(origin).forEach(key => {
         obj[key] = parseType(origin[key]);
-    })
+    });
+    console.log('queryToState: obj', obj);
     return obj;
 }
 
@@ -39,9 +40,8 @@ export function getStateFromURL() {
 
 export function syncStateToURL(state:Object) {
     const locationAddress = location.href.split('?')[0];
-    console.log('state: ', state);
     const query = stateToQuery(state);
-    console.log(query);
+    console.log('syncStateToURL query: ', query);
     const href = locationAddress + '?' + query;
     location.href = href;
 }
