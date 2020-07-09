@@ -11,7 +11,7 @@ export function queryToState(query:string, stateList:string[]) {
         .filter((value) => (stateList.indexOf(value)) > -1)
         .reduce((obj, key) => {
             const parsedVal = parseParam(origin[key]);
-            parsedVal && (obj[key] = parsedVal);
+            parsedVal != null && (obj[key] = parsedVal);
             return obj;
         }, {});
 }

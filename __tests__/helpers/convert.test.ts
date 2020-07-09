@@ -1,6 +1,4 @@
-import rewire from "rewire";
 import { queryToState, parseParam, stateToQuery } from "../../src/helpers/convert";
-import { parseQuery } from "../../src/helpers/url";
 
 // parseParam
 test('parseParam', () => {
@@ -40,7 +38,7 @@ test('queryToState should parse query', () => {
             "current":1
         },
         chTypes: ["CHA", "CHB"],
-        // reportPublished: 'false',
+        reportPublished: false,
     });
 });
 
