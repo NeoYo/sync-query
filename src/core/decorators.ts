@@ -1,5 +1,5 @@
 import { pick, difference } from "../helpers/util";
-import { getStateFromURL, syncStateToURL } from "../helpers/convert";
+import { queryToState, stateToQuery } from "../helpers/convert";
 
 export function syncQueryCb() {
     return function (target: any, propertyKey: string) {
@@ -21,15 +21,28 @@ export function SyncQueryFactory(stateList: string[], callback?:string) {
  * @param stateList states are observed
  * @param callback callback would be called when state difference is detected
  */
-export function syncQueryHOC(WrappedComponent, stateList?: string[], callback?:string) : any{
+export function syncQueryHOC(WrappedComponent, stateList: string[], callback?:string) : any{
     return class Enhancer extends WrappedComponent {
         constructor(param) {
             super(param);
             this.state = {
                 ...this.state,
-                ...getStateFromURL(),
+                ...this.getStateFromURL(stateList),
             }
             this.reBindCallback();
+        }
+        getStateFromURL(stateList:string[]) {
+            const query = location.href.split('?')[1];
+            if (query == null) {
+                return;
+            }
+            return queryToState(query, stateList);
+        }
+        syncStateToURL(state:Object) {
+            const locationAddress = location.href.split('?')[0];
+            const query = stateToQuery(state);
+            const href = locationAddress + '?' + query;
+            location.href = href;
         }
         reBindCallback() {
             if (typeof this.callback === 'string'
@@ -72,7 +85,7 @@ export function syncQueryHOC(WrappedComponent, stateList?: string[], callback?:s
             if (isDiff) {
                 this[callback] && typeof this[callback] === 'function' && this[callback]();
                 console.log('pickedState: ', pickedState);
-                syncStateToURL(pickedState)
+                this.syncStateToURL(pickedState);
             }
             return (
                 super.componentDidUpdate &&

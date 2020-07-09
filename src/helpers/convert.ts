@@ -2,25 +2,26 @@ import { parseQuery, isStringParam, extractStringValue, encodeQuery } from "./ur
 import { filterExist, map } from "./util";
 
 // TODO: UnitTest for private variable https://github.com/jhnns/rewire
-function queryToState(query:string) {
-    if (query == null || query.length === 0) {
+export function queryToState(query:string, stateList:string[]) {
+    if (query == null || query.length === 0 || stateList.length === 0) {
         return {};
     }
     const origin = parseQuery(query);
-    const obj = {};
-    Object.keys(origin).forEach(key => {
-        obj[key] = parseType(origin[key]);
-    });
-    console.log('queryToState: obj', obj);
-    return obj;
+    return Object.keys(origin)
+        .filter((value) => (stateList.indexOf(value)) > -1)
+        .reduce((obj, key) => {
+            const parsedVal = parseParam(origin[key]);
+            parsedVal && (obj[key] = parsedVal);
+            return obj;
+        }, {});
 }
 
-function stateToQuery(state:Object) {
+export function stateToQuery(state:Object) {
     if (state == null) {
         return '';
     }
     const filterState = filterExist(state);
-    return encodeQuery(
+    const query = encodeQuery(
         map(
             filterState,
             function(value) {
@@ -28,40 +29,15 @@ function stateToQuery(state:Object) {
             }
         )
     );
+    return query;
 }
 
-export function getStateFromURL() {
-    const query = location.href.split('?')[1];
-    if (query == null) {
-        return;
+export function parseParam(value) {
+    let parsed;
+    try {
+        parsed = JSON.parse(value);
+    } catch (error) {
+        // console.warn(`parseParam error: ${ value } can't be JSON.parse. Error: ${ error }. Type: ${ typeof value }. `);
     }
-    return queryToState(query);
-}
-
-export function syncStateToURL(state:Object) {
-    const locationAddress = location.href.split('?')[0];
-    const query = stateToQuery(state);
-    console.log('syncStateToURL query: ', query);
-    const href = locationAddress + '?' + query;
-    location.href = href;
-}
-
-function parseType(value) {
-    if (typeof value === 'string' &&  value.length === 0) {
-        return;
-    }
-    if (isStringParam(value)) {
-        return extractStringValue(value);
-    }
-    // TODO: change to JSON.parse(value, cb)
-    return JSON.parse(value);
-    // Unit Test
-    // 字符串
-    // null
-    // undefined
-    // boolean
-    // number
-    // string
-    // object
-    // symbol (ES6)
+    return parsed;
 }
