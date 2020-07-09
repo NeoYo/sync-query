@@ -64,22 +64,43 @@ export function formatQuery(query) {
     }).filter(Boolean).join('&')
 }
 
-export const parseQuery = queryString => {
+export const parseQuery = (queryString, handler = decodeURIComponent) => {
     const query = {}
     const pairs = queryString.split('&')
     for (let i = 0; i < pairs.length; i++) {
         const pair = pairs[i].split('=')
-        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '')
+        query[handler(pair[0])] = handler(pair[1] || '')
     }
     return query
 }
 
-export const encodeQuery = queryObject => {
+export const encodeQuery = (queryObject, handler:Function = encodeURIComponent) => {
     return Object.entries(queryObject)
         .filter(([key, value]) => typeof value !== 'undefined')
         .map(
             ([key, value]) =>
-                encodeURIComponent(key) + (value != null ? '=' + encodeURIComponent(value as any) : '')
+                handler(key) + (value != null ? '=' + handler(value as any) : '')
         )
         .join('&')
 }
+
+export const filterQuery = (
+    queryString:string,
+    handler:(key:string, value:string) => Boolean
+) => (
+    queryString
+        .split('&')
+        .reduce(
+            (acc, cur) => {
+                const [key, value] = cur.split('=')
+                if (handler(key, value)) {
+                    acc.push(cur);
+                }
+                return acc;
+            },
+            []
+        )
+        .join('&')
+)
+
+

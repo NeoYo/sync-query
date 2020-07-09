@@ -1,19 +1,32 @@
-import { parseQuery, isStringParam, extractStringValue, encodeQuery } from "./url";
-import { filterExist, map } from "./util";
+import { parseQuery, encodeQuery } from "./url";
+import { filterExist, map, filter } from "./util";
 
-// TODO: UnitTest for private variable https://github.com/jhnns/rewire
-export function queryToState(query:string, stateList:string[]) {
-    if (query == null || query.length === 0 || stateList.length === 0) {
+export function queryToState(query:string, stateList?:string[]) {
+    if (query == null || query.length === 0) {
         return {};
     }
     const origin = parseQuery(query);
     return Object.keys(origin)
-        .filter((value) => (stateList.indexOf(value)) > -1)
+        .filter((value) => (
+            stateList == null ? true : stateList.indexOf(value)) > -1
+        )
         .reduce((obj, key) => {
             const parsedVal = parseParam(origin[key]);
             parsedVal != null && (obj[key] = parsedVal);
             return obj;
         }, {});
+}
+
+export function mergeQuery(state:Object, stateList:string[], oldQuery:string) {
+    const wholeQueryObj = parseQuery(oldQuery, value => value);
+    const otherQueryObj = filter(
+        wholeQueryObj, (acc, cur, obj) => {
+            return stateList.indexOf(cur) === -1;
+        }
+    );
+    const otherQueryString = encodeQuery(otherQueryObj, value => value)
+        
+
 }
 
 export function stateToQuery(state:Object) {

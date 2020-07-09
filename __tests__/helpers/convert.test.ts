@@ -27,11 +27,28 @@ test('queryToState should filter undefined value', () => {
 
 test('queryToState should parse query', () => {
     const state = queryToState(
-        "dbStartDate=%222020-05-01%22&pagination=%7B%22pageSize%22%3A20%2C%22total%22%3A21%2C%22current%22%3A1%7D&chTypes=%5B%22CHA%22%2C%22CHB%22%5D&reportPublished=false",
+        "dbStartDate=%222020-05-01%22&dbEndDate=%222020-05-01%22&pagination=%7B%22pageSize%22%3A20%2C%22total%22%3A21%2C%22current%22%3A1%7D&chTypes=%5B%22CHA%22%2C%22CHB%22%5D&reportPublished=false",
         ['pagination', 'dbStartDate', 'chTypes', 'reportPublished']
     );
     expect(state).toStrictEqual({
         dbStartDate: '2020-05-01',
+        pagination: {
+            "pageSize":20,
+            "total":21,
+            "current":1
+        },
+        chTypes: ["CHA", "CHB"],
+        reportPublished: false,
+    });
+});
+
+test('queryToState should parse query all params', () => {
+    const state = queryToState(
+        "dbStartDate=%222020-05-01%22&dbEndDate=%222020-05-01%22&pagination=%7B%22pageSize%22%3A20%2C%22total%22%3A21%2C%22current%22%3A1%7D&chTypes=%5B%22CHA%22%2C%22CHB%22%5D&reportPublished=false"
+    );
+    expect(state).toStrictEqual({
+        dbStartDate: '2020-05-01',
+        dbEndDate: '2020-05-01',
         pagination: {
             "pageSize":20,
             "total":21,

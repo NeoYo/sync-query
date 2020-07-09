@@ -1,5 +1,6 @@
 import { pick, difference } from "../helpers/util";
 import { queryToState, stateToQuery } from "../helpers/convert";
+import { parseQuery, filterQuery } from "../helpers/url";
 
 export function syncQueryCb() {
     return function (target: any, propertyKey: string) {
@@ -31,20 +32,21 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callback?:st
             }
             this.reBindCallback();
         }
-        getStateFromURL(stateList:string[]) {
+        private getStateFromURL(stateList:string[]) {
             const query = location.href.split('?')[1];
             if (query == null) {
                 return;
             }
             return queryToState(query, stateList);
         }
-        syncStateToURL(state:Object) {
-            const locationAddress = location.href.split('?')[0];
-            const query = stateToQuery(state);
-            const href = locationAddress + '?' + query;
+        private syncStateToURL(state:Object) {
+            const [locationAddress, oldQuery] = location.href.split('?');
+            const restQuery = filterQuery(oldQuery, (key, value) => (stateList.indexOf(key) === -1))
+            const query =  stateToQuery(state);
+            const href = `${locationAddress}?${query}&${restQuery}`;
             location.href = href;
         }
-        reBindCallback() {
+        private reBindCallback() {
             if (typeof this.callback === 'string'
                 && this.callback.length > 0
             ) {
