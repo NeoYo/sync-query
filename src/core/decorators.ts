@@ -1,4 +1,4 @@
-import { pick, difference } from "../helpers/util";
+import { pick, difference, debounce } from "../helpers/util";
 import { queryToState, stateToQuery } from "../helpers/convert";
 import { parseQuery, filterQuery } from "../helpers/url";
 
@@ -16,13 +16,23 @@ export function SyncQueryFactory(stateList: string[], callback?:string) {
     }
 }
 
+type SyncQueryConfig = {
+    wait: number,
+}
+
 /**
  * syncQueryHOC
  * @param WrappedComponent 
  * @param stateList states are observed
  * @param callback callback would be called when state difference is detected
+ * @param config SyncQueryConfig
  */
-export function syncQueryHOC(WrappedComponent, stateList: string[], callback?:string) : any{
+export function syncQueryHOC(WrappedComponent, stateList: string[], callback?:string, config?:SyncQueryConfig) : any{
+    if (config == null) {
+        config = {
+            wait: 300,
+        }
+    }
     return class Enhancer extends WrappedComponent {
         constructor(param) {
             super(param);
@@ -31,6 +41,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callback?:st
                 ...this.getStateFromURL(stateList),
             }
             this.reBindCallback();
+            this.stateDiffEffect = debounce(this.stateDiffEffect, config.wait).bind(this);
         }
         private getStateFromURL(stateList:string[]) {
             const query = location.href.split('?')[1];
@@ -80,19 +91,26 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callback?:st
                     super.componentDidUpdate(prevProps, prevState)
                 );
             }
-            const pickedPrevState = pick(prevState, stateList);
-            const pickedState = pick(this.state, stateList);
-            const diffState = difference(pickedPrevState, pickedState);
-            let isDiff = Object.keys(diffState).length > 0;
-            if (isDiff) {
-                this[callback] && typeof this[callback] === 'function' && this[callback]();
-                console.log('pickedState: ', pickedState);
-                this.syncStateToURL(pickedState);
-            }
+            this.stateDiffEffect(prevState, this.state);
             return (
                 super.componentDidUpdate &&
                 super.componentDidUpdate(prevProps, prevState)
             );
+        }
+        private stateDiffEffect(prevState, state) {
+            if (prevState == null && state == null) {
+                // console.log('stateDiffEffect: ', stateDiffEffect)
+                console.warn('return....');
+                return;
+            }
+            const pickedPrevState = pick(prevState, stateList);
+            const pickedState = pick(state, stateList);
+            const diffState = difference(pickedPrevState, pickedState);
+            let isDiff = Object.keys(diffState).length > 0;
+            if (isDiff) {
+                this[callback] && typeof this[callback] === 'function' && this[callback]();
+                this.syncStateToURL(pickedState);
+            }
         }
         // TODO: Unit Test Jest React
         setState(updater, callback?:() => void) {

@@ -1,3 +1,5 @@
+import { isString } from "./type";
+
 export function isStringParam(value) {
     return /^"[^"]+"$/.test(value);
 }
@@ -87,8 +89,14 @@ export const encodeQuery = (queryObject, handler:Function = encodeURIComponent) 
 export const filterQuery = (
     queryString:string,
     handler:(key:string, value:string) => Boolean
-) => (
-    queryString
+) => {
+    if (!isString(queryString)) {
+        return '';
+    }
+    if (queryString.length === 0) {
+        return '';
+    }
+    return queryString
         .split('&')
         .reduce(
             (acc, cur) => {
@@ -100,7 +108,6 @@ export const filterQuery = (
             },
             []
         )
-        .join('&')
-)
-
+        .join('&');
+}
 

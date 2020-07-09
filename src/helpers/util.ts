@@ -1,4 +1,5 @@
 import * as _  from 'lodash';
+import { isObject } from './type';
 /**
  * Refer: https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore
  * @param object 
@@ -11,6 +12,10 @@ export function pick(object, keys:string[]) {
 }
 
 export function filter(obj, handler) {
+    if (!isObject(obj)) {
+        console.error(`Param ${obj} is not a object`);
+        return {};
+    }
     return Object.keys(obj).reduce((acc, cur) => {
         if (typeof handler != 'function') {
             handler = notNull;
@@ -42,9 +47,13 @@ export function filterExist(obj:Object) {
     return filter(obj, exist);
 }
 
-export function map(object, func) {
-    return Object.keys(object).reduce((acc, key) => {
-        acc[key] = func(object[key]);
+export function map(obj, func) {
+    if (!isObject(obj)) {
+        console.error(`Param ${obj} is not a object`);
+        return {};
+    }
+    return Object.keys(obj).reduce((acc, key) => {
+        acc[key] = func(obj[key]);
         return acc;
     }, {});
 }
@@ -66,4 +75,18 @@ export function difference(object, base) {
         });
     }
     return changes(object, base);
+}
+
+export function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(
+            function() {
+                func.apply(context, args)
+            },
+            wait
+        )
+    }
 }
