@@ -1,8 +1,9 @@
 import { parseQuery, encodeQuery } from "./url";
-import { filterExist, map, filter } from "./util";
+import { filterExist, map } from "./util";
+import { isString, isObject } from "./type";
 
 export function queryToState(query:string, stateList?:string[]) {
-    if (query == null || query.length === 0) {
+    if (!isString(query) || query.length === 0) {
         return {};
     }
     const origin = parseQuery(query);
@@ -17,20 +18,8 @@ export function queryToState(query:string, stateList?:string[]) {
         }, {});
 }
 
-export function mergeQuery(state:Object, stateList:string[], oldQuery:string) {
-    const wholeQueryObj = parseQuery(oldQuery, value => value);
-    const otherQueryObj = filter(
-        wholeQueryObj, (acc, cur, obj) => {
-            return stateList.indexOf(cur) === -1;
-        }
-    );
-    const otherQueryString = encodeQuery(otherQueryObj, value => value)
-        
-
-}
-
 export function stateToQuery(state:Object) {
-    if (state == null) {
+    if (!isObject(state)) {
         return '';
     }
     const filterState = filterExist(state);

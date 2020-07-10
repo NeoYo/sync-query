@@ -59,6 +59,12 @@ test('queryToState should parse query all params', () => {
     });
 });
 
+test('queryToState should return {}', () => {
+    expect(queryToState('')).toStrictEqual({});
+    // @ts-ignore
+    expect(queryToState([])).toStrictEqual({});
+});
+
 test('stateToQuery should stringify state', () => {
     const query = stateToQuery({
         dbStartDate: '2020-05-01',
@@ -73,4 +79,11 @@ test('stateToQuery should stringify state', () => {
     expect(query).toBe("dbStartDate=%222020-05-01%22&pagination=%7B%22pageSize%22%3A20%2C%22total%22%3A21%2C%22current%22%3A1%7D&chTypes=%5B%22CHA%22%2C%22CHB%22%5D&reportPublished=false");
 });
 
+test('stateToQuery param must be object', () => {
+    // @ts-ignore
+    expect(stateToQuery([])).toBe('');
+    expect(stateToQuery({})).toBe('');
+    // @ts-ignore
+    expect(stateToQuery(null)).toBe('');
+})
 

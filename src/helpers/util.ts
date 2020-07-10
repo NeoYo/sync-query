@@ -11,7 +11,7 @@ export function pick(object, keys:string[]) {
     });
 }
 
-export function filter(obj, handler) {
+export function filter(obj, handler?) {
     if (!isObject(obj)) {
         console.error(`Param ${obj} is not a object`);
         return {};
@@ -53,13 +53,14 @@ export function map(obj, func) {
         return {};
     }
     return Object.keys(obj).reduce((acc, key) => {
-        acc[key] = func(obj[key]);
+        acc[key] = func(obj[key], key);
         return acc;
     }, {});
 }
 
 /**
  * TODO: Zero dependency
+ * More: https://github.com/mattphillips/deep-object-diff/blob/master/src/utils/index.js
  * Ref: https://gist.github.com/Yimiprod/7ee176597fef230d1451
  * Deep diff between two object, using lodash
  * @param  {Object} object Object compared
@@ -74,7 +75,8 @@ export function difference(object, base) {
             }
         });
     }
-    return changes(object, base);
+    const result = changes(object, base)
+    return result;
 }
 
 export function debounce(func, wait) {

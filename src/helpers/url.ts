@@ -1,13 +1,5 @@
 import { isString } from "./type";
 
-export function isStringParam(value) {
-    return /^"[^"]+"$/.test(value);
-}
-
-export function extractStringValue(value) {
-    return value.substr(1, value.length - 2)
-}
-
 /**
  * Refer: nuxt/utils
  * Format given url, append query to url query string
