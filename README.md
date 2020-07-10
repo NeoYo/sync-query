@@ -8,7 +8,7 @@
 
 <hr />
 
-用于React state 和路由参数同步的装饰器
+用于React state 和路由参数同步的 HOC
 
 ## 安装
 
@@ -31,15 +31,18 @@ import { SyncQueryFactory } from "sync-query";
 @SyncQueryFactory(['searchInput', 'pagination'], 'fetch' )
 export class MyComponent extends Component{
    // 注意 SyncQueryFactory 装饰器要放在离 MyComponent 最近的位置
+   fetch() {
+       // network fetch...
+   }
 }
 ```
 
 ## 已提供的方法:
- - `SyncQueryFactory(observedState, effect)`
-   observedState： 传一个树
- returns the difference of the original and updated objects
 
- - ``
+ - `SyncQueryFactory(observedStates:string[], effect:string)`
+   observedState： 传一个数组，state 中对应 key 的值会被监听
+   effect: 监听到变化时，触发 effect 方法
+   returns 一个新的组件
 
 ## License
 
