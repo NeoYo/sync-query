@@ -24,7 +24,7 @@ type SyncQueryConfig = {
 /**
  * syncQueryHOC
  * @param WrappedComponent 
- * @param stateList states are observed @@@ TODO: 增加自定义 state 与 URL 的转换
+ * @param stateList states are observed @@@ TODO: 增加自定义 state 与 URL 的转换  @@@ 拆分 fetch 和 URL 的依赖
  * @param callback callback would be called when state difference is detected
  * @param config SyncQueryConfig
  */
