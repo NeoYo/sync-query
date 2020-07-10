@@ -2,6 +2,7 @@ import { pick, difference, debounce } from "../helpers/util";
 import { queryToState, stateToQuery } from "../helpers/convert";
 import { parseQuery, filterQuery } from "../helpers/url";
 
+// @@TODO:自测
 export function syncQueryCb() {
     return function (target: any, propertyKey: string) {
         target.callback = propertyKey;
@@ -23,7 +24,7 @@ type SyncQueryConfig = {
 /**
  * syncQueryHOC
  * @param WrappedComponent 
- * @param stateList states are observed
+ * @param stateList states are observed @@@ TODO: 增加自定义 state 与 URL 的转换
  * @param callback callback would be called when state difference is detected
  * @param config SyncQueryConfig
  */
@@ -74,6 +75,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callback?:st
                 console.error('sync-query: callback must be react component method name or be null');
                 return;
             }
+            // @@@TODO 修复 setState
             const clone = Object.create(this);
             clone.setState = (val) => {
                 this.setState({
