@@ -3,12 +3,12 @@
 
   ❄️
 
-  同步 React state 和 URL 路由参数
+  使用 React 高阶组件，实现 React state 和 路由参数之间的同步
 </div>
 
 <hr />
 
-用于React state 和路由参数同步的 HOC
+<!-- 用于React state 和路由参数同步的 HOC -->
 
 ## 安装
 
@@ -60,9 +60,11 @@ export const MyComponentEnhance =
 
 ## API
 
-### syncQueryHOC(WrappedComponent, stateList: string[], callbackName?:string, config?:SyncQueryConfig): EnhanceComponent
+### syncQueryHOC
 
 接收一个 React 组件，返回带有同步 state 到路由参数功能的组件
+
+syncQueryHOC(WrappedComponent, stateList: string[], callbackName?:string, config?:SyncQueryConfig): EnhanceComponent
 
 - WrappedComponent: 被装饰的原始组件
 - stateList: 传一个数组，state 中对应 key 的值会被监听
@@ -78,9 +80,11 @@ export const MyComponentEnhance =
     }
     ```
 
-### SyncQueryFactory(stateList: string[], callbackName?:string, config?:SyncQueryConfig) 
+### SyncQueryFactory
 
 SyncQueryFactory 装饰器工厂， 在 typescript 中使用
+
+SyncQueryFactory(stateList: string[], callbackName?:string, config?:SyncQueryConfig) 
 
 > 注意 类装饰器工厂 SyncQueryFactory 和 方法装饰器 syncQueryCb 可以配合使用， 高阶组件 syncQueryHOC 与前两者尽量避免共用。
 
@@ -107,9 +111,12 @@ function SyncQueryFactory(stateList: string[], callbackName?:string, config?:Syn
 }
 ```
 
-### syncQueryCb(callbackDeps?:string[])
+### syncQueryCb
 
 syncQueryCb 方法装饰器，与 SyncQueryFactory 配合使用
+
+syncQueryCb(callbackDeps?:string[])
+
 - callbackDeps?: string[]  callbackDeps 存放 state key 的数组，监听到 state 中对应key 的 value 变化时，会调用 callback（网络请求等）
 
 使用示例： 

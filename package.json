@@ -1,17 +1,23 @@
 {
   "name": "sync-query",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.1.4",
+  "description": "使用 React 高阶组件，实现 React state 和 路由参数之间的同步",
   "main": "dist/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --open",
     "test": "jest",
-    "stat": "cross-env NODE_ENV=stat webpack",
+    "analyze": "cross-env NODE_ENV=stat webpack",
     "build": "webpack",
     "build:w": "webpack --watch"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/NeoYo/sync-query.git"
+  },
+  "homepage": "https://github.com/NeoYo/sync-query",
+  "keywords": ["react", "query", "sync query", "URLSearchParam", "React", "路由参数", "同步"],
+  "author": "liveabean@163.com",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
