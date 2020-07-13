@@ -1,8 +1,22 @@
 import { parseQuery, encodeQuery } from "./url";
 import { filterExist, map } from "./util";
-import { isString, isObject } from "./type";
+import { isString, isObject, isFunction } from "./type";
 
-export function queryToState(query:string, stateList?:string[]) {
+export function parseParam(value) {
+    let parsed;
+    try {
+        parsed = JSON.parse(value);
+    } catch (error) {
+        console.error(`parseParam error: ${ value } can't be JSON.parse. Error: ${ error }. Type: ${ typeof value }. `);
+    }
+    return parsed;
+}
+
+export type IQueryParser = {
+    [key:string]: (string) => any
+};
+
+export function queryToState(query:string, stateList?:string[], parser?:IQueryParser) {
     if (!isString(query) || query.length === 0) {
         return {};
     }
@@ -12,13 +26,22 @@ export function queryToState(query:string, stateList?:string[]) {
             stateList == null ? true : stateList.indexOf(value)) > -1
         )
         .reduce((obj, key) => {
-            const parsedVal = parseParam(origin[key]);
+            const parseParamFunc = isObject(parser) && isFunction(parser[key]) && parser[key] || parseParam;
+            const parsedVal = parseParamFunc(origin[key]);
             parsedVal != null && (obj[key] = parsedVal);
             return obj;
         }, {});
 }
 
-export function stateToQuery(state:Object) {
+function stringifyParam(value) {
+    return JSON.stringify(value);
+}
+
+export type IQueryStringify = {
+    [key:string]: (any) => any,
+}
+
+export function stateToQuery(state:Object, stringify?:IQueryStringify) {
     if (!isObject(state)) {
         return '';
     }
@@ -26,20 +49,12 @@ export function stateToQuery(state:Object) {
     const query = encodeQuery(
         map(
             filterState,
-            function(value) {
-                return JSON.stringify(value);
+            (value, key) => {
+                const stringifyParamFunc =
+                    isObject(stringify) && isFunction(stringify[key]) && stringify[key] || stringifyParam;
+                return stringifyParamFunc(value);
             }
         )
     );
     return query;
-}
-
-export function parseParam(value) {
-    let parsed;
-    try {
-        parsed = JSON.parse(value);
-    } catch (error) {
-        // console.warn(`parseParam error: ${ value } can't be JSON.parse. Error: ${ error }. Type: ${ typeof value }. `);
-    }
-    return parsed;
 }

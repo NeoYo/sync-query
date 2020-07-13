@@ -1,9 +1,8 @@
 import { pick, difference, debounce } from "../helpers/util";
-import { queryToState, stateToQuery } from "../helpers/convert";
-import { parseQuery, filterQuery } from "../helpers/url";
+import { queryToState, stateToQuery, IQueryParser, IQueryStringify } from "../helpers/convert";
+import { filterQuery } from "../helpers/url";
 import { isArray, isObject } from "../helpers/type";
 
-// @@TODO:自测
 export function syncQueryCb(callbackDeps?:string[]) {
     return function (target: any, propertyKey: string) {
         target.callbackName = propertyKey;
@@ -22,14 +21,17 @@ export function SyncQueryFactory(stateList: string[], callbackName?:string, conf
 }
 
 type SyncQueryConfig = {
-    wait: number,
-    callbackDeps?: string[],
+    wait: number,                           // 函数防抖的等待时间， 单位 ms
+    callbackDeps?: string[],                // callbackDeps 存放 state key 的数组，监听到 state 中对应key 的 value 变化时，会调用 callback（网络请求等）
+                                            // callbackDeps 没有传入时，默认监听的内容等于 stateList
+    parser?: IQueryParser,                  // 解析器：用于将路由参数 query 解析到 state，默认是 JSON.parse
+    stringify?: IQueryStringify,            // 生成器：用于生成 state 对应的 query 字符串，默认是 JSON.stringify
 }
 
 /**
  * syncQueryHOC
  * @param WrappedComponent 
- * @param stateList states are observed @@@ TODO: 增加自定义 state 与 URL 的转换
+ * @param stateList states are observed
  * @param callbackName callbackName would be called when state difference is detected
  * @param config SyncQueryConfig
  */
@@ -59,17 +61,17 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             if (query == null) {
                 return;
             }
-            return queryToState(query, stateList);
+            return queryToState(query, stateList, config.parser);
         }
         private syncStateToURL(state:Object) {
             const [locationAddress, oldQuery] = location.href.split('?');
             const restQuery = filterQuery(oldQuery, (key, value) => (stateList.indexOf(key) === -1))
-            const query =  stateToQuery(state);
+            const query =  stateToQuery(state, config.stringify);
             const href = `${locationAddress}?${query}&${restQuery}`;
             location.href = href;
         }
         private reBindCallback() {
-            this.callbackName = this.callbackName || callbackName;
+            this.callbackName = this.callbackName || callbackName;            
             if (this.callbackName == null) {
                 return;
             }
@@ -77,16 +79,13 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
                 console.error('sync-query: callback must be react component method name!!! Tips:  SyncQueryFactory and syncQueryHOC must be closest with Component Class');
                 return;
             }
-            // @@@TODO 修复 setState
             const clone = Object.create(this);
-            clone.setState = (val) => {
-                this.setState({
-                    ...val,
-                    __SYNC_QUERY_DIFF_IGNORE__: true,
-                });
+            clone.setState = (updater, callback) => {
+                this.setState(updater, callback, true);
             }
             // super[callbackName] is super.prototype[callbackName], so it is not bound with _super.
             this[this.callbackName] = super[this.callbackName].bind(clone);
+            this.callbackDeps = this.callbackDeps || config.callbackDeps;
         }
         componentDidUpdate(prevProps, prevState) {
             if (this.state[__SYNC_QUERY_DIFF_IGNORE__] === true) {
@@ -115,7 +114,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
                 this.syncStateToURL(pickedState);
             }
             // callbackDeps diff
-            const callbackDeps = this.callbackDeps || config.callbackDeps;            
+            const callbackDeps = this.callbackDeps;            
             if (callbackDeps == null) {
                 isDiff && this[this.callbackName] && typeof this[this.callbackName] === 'function' && this[this.callbackName]();
             } else {
@@ -126,30 +125,29 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
                 isDiff && this[this.callbackName] && typeof this[this.callbackName] === 'function' && this[this.callbackName]();
             }
         }
-        // TODO: Unit Test Jest React
-        setState(updater, callback?:() => void) {
+        setState(updater, callback?:() => void, diffIgnore?:boolean) {
             // Ref: https://zh-hans.reactjs.org/docs/react-component.html#setstate
             if (typeof updater === 'object') {
                 return super.setState(
-                    this.getLockedState(updater),
+                    {
+                        ...updater,
+                        [__SYNC_QUERY_DIFF_IGNORE__]: diffIgnore,
+                    },
                     callback,
                 );
             }
             if (typeof updater === 'function') {
                 return super.setState(
                     function (state, props) {
-                        return this.getLockedState(updater(state, props));
+                        return {
+                            ...updater(state, props),
+                            [__SYNC_QUERY_DIFF_IGNORE__]: diffIgnore,
+                        }
                     },
                     callback,
                 );
             }
             return super.setState(updater, callback);
-        }
-        private getLockedState(state:object) {
-            return {
-                ...state,
-                [__SYNC_QUERY_DIFF_IGNORE__]: state[__SYNC_QUERY_DIFF_IGNORE__] || false
-            };
         }
     }
 }

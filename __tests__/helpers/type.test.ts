@@ -1,4 +1,4 @@
-import { isArray, isObject, isString } from "../../src/helpers/type";
+import { isArray, isObject, isString, isFunction } from "../../src/helpers/type";
 
 test('isArray', () => {
     expect(isArray([])).toBe(true);
@@ -13,4 +13,10 @@ test('isObject', () => {
 test('isString', () => {
     expect(isString('')).toBe(true);
     expect(isString({})).toBe(false);
+})
+
+test('isFunction', () => {
+    expect(isFunction({})).toBe(false);
+    expect(isFunction(function test() {})).toBe(true);
+    expect(isFunction(() => {})).toBe(true);
 })
