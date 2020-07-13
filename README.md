@@ -16,28 +16,50 @@
 
 `npm i --save sync-query`
 
-## 引入
+## 使用说明
 
-ES6 / Babel:
-``` js
-import { SyncQueryFactory } from "sync-query";
-```
-
-## 使用说明:
-
-### `SyncQueryFactory`:
+### TypeScript 装饰器
 
 ```js
-@SyncQueryFactory(['searchInput', 'pagination'], 'fetch' )
-export class MyComponent extends Component{
-   // 注意 SyncQueryFactory 装饰器要放在离 MyComponent 最近的位置
-   fetch() {
-       // network fetch...
-   }
+import { SyncQueryFactory, syncQueryCb } from "sync-query";
+
+@SyncQueryFactory(['searchInput', 'pagination']) // 监听到 searchInput 或 pagination 变化时同步到 URL query
+export class MyComponent extends Component {
+
+    @syncQueryCb(['searchInput']) // 监听到 searchInput 变化时调用 fetch 函数
+    fetch() {
+        // network fetch...
+    }
 }
 ```
 
-## 已提供的方法:
+### ES6 HOC
+
+``` js
+import { syncQueryHOC } from "sync-query";
+
+export class MyComponent extends Component {
+    fetch() {
+        // network fetch...
+    }
+}
+
+export const MyComponentEnhance = 
+    syncQueryHOC(
+        MyComponent,
+        ['searchInput', 'pagination'], // 监听到 searchInput 或 pagination 变化时同步到 URL query
+        'fetch',
+        {
+            callbackDeps: ['searchInput'], // 监听到 searchInput 变化时调用 fetch 函数
+            wait: 600, // 函数防抖，600ms
+        }
+    );
+```
+
+
+> 注意: SyncQueryFactory 装饰器工厂 和 syncQueryHOC 要放在离 MyComponent 最近的位置
+
+## 提供的方法:
 
  - `SyncQueryFactory(observedStates:string[], effect:string)`
    observedState： 传一个数组，state 中对应 key 的值会被监听
