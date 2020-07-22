@@ -10,6 +10,12 @@
 
 <!-- 用于React state 和路由参数同步的 HOC -->
 
+## Demo
+
+![](./syncToQuery.gif)
+
+[sync-query of antd-demo](./src/examples/antd/antd-demo)
+
 ## 安装
 
 `yarn add sync-query`
