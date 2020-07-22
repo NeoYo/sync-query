@@ -25,7 +25,11 @@ import { SyncQueryFactory, syncQueryCb } from "sync-query";
 
 @SyncQueryFactory(['searchInput', 'pagination']) // 监听到 searchInput 或 pagination 变化时同步到 URL query
 export class MyComponent extends Component {
-
+    this.state = {
+        searchInput: 'hello world',
+        pagination: {
+        },
+    }
     @syncQueryCb(['searchInput']) // 监听到 searchInput 变化时调用 fetch 函数
     fetch() {
         // network fetch...
