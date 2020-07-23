@@ -12,9 +12,32 @@
 
 ## Demo
 
-![](./syncToQuery.gif)
+![](./gif/syncToQuery.gif)
 
-[sync-query of antd-demo](./src/examples/antd/antd-demo)
+![](./gif/autoCall.gif)
+
+^_^ This is demo of using sync-query in antd-design.
+
+There is only three lines of code.
+
+```js
+// import
+import { syncQueryHOC } from "sync-query";
+// use syncQueryHOC
+const MyComponentEnhance = syncQueryHOC(MyComponent, ['searchInput', 'pagination'], 'fetch');
+<MyComponentEnhance></MyComponentEnhance>
+//...
+```
+
+[More about the Demo](https://github.com/NeoYo/sync-query/tree/master/examples/antd/antd-demo)
+
+Once we did this, there are powerful features below.
+
+## Feature
+
+- auto synchronize react state to url query (URLSearchParam)
+- auto call 'fetch' if react state is detected change.
+- auto init react react state from url query (URLSearchParam)
 
 ## 安装
 

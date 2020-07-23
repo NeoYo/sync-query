@@ -2,7 +2,7 @@
 
 ^_^ This is demo of using sync-query in antd-design.
 
-There is only three lines of code in src/App.js
+There is only three lines of code in [src/App.js](https://github.com/NeoYo/sync-query/blob/master/examples/antd/antd-demo/src/App.js)
 
 ```js
 import { syncQueryHOC } from "sync-query";
@@ -20,8 +20,6 @@ Once we did this, there are powerful features below.
 - auto synchronize react state to url query (URLSearchParam)
 - auto call 'fetch' if react state is detected change.
 - auto init react react state from url query (URLSearchParam)
-
-For more about the gif demo, [click here]().
 
 --------
 
