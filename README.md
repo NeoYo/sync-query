@@ -3,12 +3,12 @@
 
   ❄️
 
-  使用 React 高阶组件，实现 React state 和 路由参数之间的同步
+  Use the React higher-order component to synchronize the React State and routing parameters
 </div>
 
 <hr />
 
-<!-- 用于React state 和路由参数同步的 HOC -->
+<!-- 使用 React 高阶组件，实现 React state 和 路由参数之间的同步 -->
 
 ## Demo
 
@@ -39,15 +39,15 @@ Once we did this, there are powerful features below.
 - auto call 'fetch' if react state is detected change.
 - auto init react react state from url query (URLSearchParam)
 
-## 安装
+## Installation(安装)
 
 `yarn add sync-query`
 
 `npm i --save sync-query`
 
-## 使用说明
+## Usage(使用说明)
 
-### TypeScript 装饰器
+### Use TypeScript Decorator
 
 ```typescript
 import { SyncQueryFactory, syncQueryCb } from "sync-query";
@@ -66,7 +66,7 @@ export class MyComponent extends Component {
 }
 ```
 
-### ES6 HOC
+### Use ES6 React HOC
 
 ``` js
 import { syncQueryHOC } from "sync-query";

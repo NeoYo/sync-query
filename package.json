@@ -1,7 +1,7 @@
 {
   "name": "sync-query",
-  "version": "0.1.4",
-  "description": "使用 React 高阶组件，实现 React state 和 路由参数之间的同步",
+  "version": "0.1.6",
+  "description": "Use the React higher-order component to synchronize the React State and routing parameters",
   "main": "dist/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --open",
