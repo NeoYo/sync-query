@@ -1,7 +1,8 @@
-import { pick, difference, debounce } from "../helpers/util";
+import { pick, debounce } from "../helpers/util";
 import { queryToState, stateToQuery, IQueryParser, IQueryStringify } from "../helpers/convert";
 import { filterQuery } from "../helpers/url";
 import { isArray, isObject } from "../helpers/type";
+import { deepEqual } from "../helpers/deepEqual";
 
 export function syncQueryCb(callbackDeps?:string[]) {
     return function (target: any, propertyKey: string) {
@@ -23,7 +24,7 @@ export function SyncQueryFactory(stateList: string[], callbackName?:string, conf
 type SyncQueryConfig = {
     wait: number,                           // 函数防抖的等待时间， 单位 ms
     callbackDeps?: string[],                // callbackDeps 存放 state key 的数组，监听到 state 中对应key 的 value 变化时，会调用 callback（网络请求等）
-                                            // callbackDeps 没有传入时，默认监听的内容等于 stateList
+                                            // PS: callbackDeps 没有传入时，默认监听的内容等于 stateList
     parser?: IQueryParser,                  // 解析器：用于将路由参数 query 解析到 state，默认是 JSON.parse
     stringify?: IQueryStringify,            // 生成器：用于生成 state 对应的 query 字符串，默认是 JSON.stringify
 }
@@ -108,8 +109,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             // stateList diff
             const pickedPrevState = pick(prevState, stateList);
             const pickedState = pick(state, stateList);
-            const diffState = difference(pickedPrevState, pickedState);
-            const isDiff = Object.keys(diffState).length > 0;
+            const isDiff = !deepEqual(pickedPrevState, pickedState);
             if (isDiff) {
                 this.syncStateToURL(pickedState);
             }
@@ -120,8 +120,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             } else {
                 const pickedPrevState = pick(prevState, callbackDeps);
                 const pickedState = pick(state, callbackDeps);
-                const diffState = difference(pickedPrevState, pickedState);
-                const isDiff = Object.keys(diffState).length > 0;
+                const isDiff = !deepEqual(pickedPrevState, pickedState);
                 isDiff && this[this.callbackName] && typeof this[this.callbackName] === 'function' && this[this.callbackName]();
             }
         }

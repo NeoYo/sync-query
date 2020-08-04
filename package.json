@@ -11,11 +11,19 @@
     "build:w": "webpack --watch"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/NeoYo/sync-query.git"
+    "type": "git",
+    "url": "https://github.com/NeoYo/sync-query.git"
   },
-  "homepage": "https://github.com/NeoYo/sync-query",
-  "keywords": ["react", "query", "sync query", "URLSearchParam", "React", "路由参数", "同步"],
+  "homepage": "https://github.com/NeoYo/sync-query#readme",
+  "keywords": [
+    "react",
+    "query",
+    "sync query",
+    "URLSearchParam",
+    "React",
+    "路由参数",
+    "同步"
+  ],
   "author": "liveabean@163.com",
   "license": "MIT",
   "devDependencies": {
@@ -35,7 +43,5 @@
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
   },
-  "dependencies": {
-    "lodash": "^4.17.15"
-  }
+  "dependencies": {}
 }

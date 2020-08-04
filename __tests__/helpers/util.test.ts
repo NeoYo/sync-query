@@ -1,4 +1,5 @@
-import { pick, debounce, filter, map, difference } from "../../src/helpers/util";
+import { pick, debounce, filter, map } from "../../src/helpers/util";
+import { deepEqual } from "../../src/helpers/deepEqual";
 
 test('pick', () => {
     const src = {
@@ -62,6 +63,7 @@ test('map', () => {
     console.error = originError;
 });
 
+/*
 test('difference', () => {
     // difference();
     expect(
@@ -112,6 +114,53 @@ test('difference', () => {
     ).toStrictEqual({
         pagination: {pageSize: 10},
     });
+});
+*/
+
+
+test('deepEqual', () => {
+    expect(
+        deepEqual({
+            chTypes: ["CHA", "CHB", "INFORMAL_CHA", "NONE", "CHC"],
+            dbEndDate: "2020-07-09",
+            dbStartDate: "2020-07-08",
+            pagination: {pageSize: 10, total: 0, current: 1},
+            reportPublished: "false",
+            searchInput: "",
+        }, {
+            chTypes: ["CHA", "CHB", "INFORMAL_CHA", "NONE", "CHC"],
+            dbEndDate: "2020-07-09",
+            dbStartDate: "2020-07-08",
+            pagination: {pageSize: 10, total: 0, current: 1},
+            reportPublished: "false",
+            searchInput: "",
+        })
+    ).toStrictEqual(true)
+
+    expect(
+        deepEqual({
+            chTypes: ["CHB", "INFORMAL_CHA", "NONE"],
+        }, {
+            chTypes: ["CHA", "CHB", "INFORMAL_CHA", "NONE"],
+        })
+    ).toStrictEqual(false);
+
+    expect(
+        deepEqual({
+            chTypes: ["ADD", "CHA", "CHB", "INFORMAL_CHA", "NONE"],
+        }, {
+            chTypes: ["CHA", "CHB", "INFORMAL_CHA", "NONE"],
+        })
+    ).toStrictEqual(false);
+
+
+    expect(
+        deepEqual({
+            pagination: {pageSize: 10, total: 0, current: 1},
+        }, {
+            pagination: {pageSize: 1, total: 0, current: 1},
+        })
+    ).toStrictEqual(false);
 });
 
 test('debounce', () => {
