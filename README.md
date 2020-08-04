@@ -8,7 +8,7 @@
 
 <hr />
 
-[中文](./README-zh.md) [英文](./README.md)
+[中文](./README-zh.md)
 
 ## Demo
 
