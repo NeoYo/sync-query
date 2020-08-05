@@ -3,7 +3,7 @@
 
   ❄️
 
-  使用 React 高阶组件，实现 React state 和 路由参数之间的同步 
+  使用 React 高阶组件，实现将 React state 存储在 URL query
 </div>
 
 <hr />

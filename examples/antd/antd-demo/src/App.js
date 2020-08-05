@@ -29,6 +29,7 @@ class MyComponent extends React.Component {
   // fetch = () => {
   fetch() {
     // ajax request after empty completing
+    console.log('fetch...');
     this.setState({ loading: true });
     const { pagination, searchInput } = this.state;
     setTimeout(() => {
@@ -64,6 +65,13 @@ class MyComponent extends React.Component {
               this.setState({
                 searchInput: e.target.value,
               });
+            }}
+            onSearch={(value) => {
+              this.setState(
+                {
+                  searchInput: value,
+                },
+              );
             }}
             placeholder="input search text"
           />

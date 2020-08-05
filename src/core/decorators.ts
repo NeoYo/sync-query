@@ -39,21 +39,23 @@ type SyncQueryConfig = {
 export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName?:string, config?:SyncQueryConfig) : any{    
     if (!isObject(config)) {
         config = {
-            wait: 600,
+            wait: 300,
         }
     } else {
         config = {
-            wait: 600,
+            wait: 300,
             ...config,
         }
     }
     return class Enhancer extends WrappedComponent {
+        private prevStateCache = {};
         constructor(param) {
             super(param);
             this.state = {
                 ...this.state,
                 ...this.getStateFromURL(stateList),
             }
+            this.prevStateCache = this.state;
             this.reBindCallback();
             this.stateDiffEffect = debounce(this.stateDiffEffect, config.wait).bind(this);
         }
@@ -95,13 +97,14 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
                     super.componentDidUpdate(prevProps, prevState)
                 );
             }
-            this.stateDiffEffect(prevState, this.state);
+            this.stateDiffEffect(this.state);
             return (
                 super.componentDidUpdate &&
                 super.componentDidUpdate(prevProps, prevState)
             );
         }
-        private stateDiffEffect(prevState, state) {
+        private stateDiffEffect(state) {
+            const prevState = this.prevStateCache;
             if (prevState == null && state == null) {
                 console.error('sync-query: stateDiffEffect could not be null');
                 return;
@@ -123,6 +126,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
                 const isDiff = !deepEqual(pickedPrevState, pickedState);
                 isDiff && this[this.callbackName] && typeof this[this.callbackName] === 'function' && this[this.callbackName]();
             }
+            this.prevStateCache = state;
         }
         setState(updater, callback?:() => void, diffIgnore?:boolean) {
             // Ref: https://zh-hans.reactjs.org/docs/react-component.html#setstate

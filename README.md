@@ -3,7 +3,7 @@
 
   ❄️
 
-  Use the React higher-order component to synchronize the React State and routing parameters
+  Use the React higher-order component to store the React State in URL query (routing parameters)
 </div>
 
 <hr />

@@ -1,6 +1,6 @@
 {
   "name": "sync-query",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "Use the React higher-order component to synchronize the React State and routing parameters",
   "main": "dist/index.js",
   "scripts": {
