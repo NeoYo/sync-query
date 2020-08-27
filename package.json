@@ -1,7 +1,7 @@
 {
   "name": "sync-query",
-  "version": "0.2.0",
-  "description": "Use the React higher-order component to synchronize the React State and routing parameters",
+  "version": "0.2.3",
+  "description": "Use the React higher-order component to store the React State in URL query (routing parameters)",
   "main": "dist/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --open",
@@ -16,11 +16,13 @@
   },
   "homepage": "https://github.com/NeoYo/sync-query#readme",
   "keywords": [
-    "react",
+    "react state",
     "query",
-    "sync query",
+    "URL query",
     "URLSearchParam",
     "React",
+    "HOC",
+    "higher-order component",
     "路由参数",
     "同步"
   ],

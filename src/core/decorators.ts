@@ -55,9 +55,6 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
                 ...this.state,
                 ...this.getStateFromURL(stateList),
             }
-            this.prevStateCache = this.state;
-            this.reBindCallback();
-            this.stateDiffEffect = debounce(this.stateDiffEffect, config.wait).bind(this);
         }
         private getStateFromURL(stateList:string[]) {
             const query = location.href.split('?')[1];
@@ -90,6 +87,13 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             this[this.callbackName] = super[this.callbackName].bind(clone);
             this.callbackDeps = this.callbackDeps || config.callbackDeps;
         }
+        componentDidMount() {
+            const result = super.componentDidMount();
+            this.prevStateCache = this.state;
+            this.reBindCallback();
+            this.stateDiffEffect = debounce(this.stateDiffEffect, config.wait).bind(this);
+            return result;
+        }
         componentDidUpdate(prevProps, prevState) {
             if (this.state[__SYNC_QUERY_DIFF_IGNORE__] === true) {
                 return (
@@ -112,6 +116,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             // stateList diff
             const pickedPrevState = pick(prevState, stateList);
             const pickedState = pick(state, stateList);
+
             const isDiff = !deepEqual(pickedPrevState, pickedState);
             if (isDiff) {
                 this.syncStateToURL(pickedState);
