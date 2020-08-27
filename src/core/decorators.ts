@@ -14,6 +14,7 @@ export function syncQueryCb(callbackDeps?:string[]) {
 }
 
 const __SYNC_QUERY_DIFF_IGNORE__ = '__SYNC_QUERY_DIFF_IGNORE__';
+const __SYNC_QUERY_CALLBACK_IGNORE__ = '__SYNC_QUERY_CALLBACK_IGNORE__';
 
 export function SyncQueryFactory(stateList: string[], callbackName?:string, config?:SyncQueryConfig) {
     return function(WrappedComponent) {
@@ -55,6 +56,9 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
                 ...this.state,
                 ...this.getStateFromURL(stateList),
             }
+            this.reBindCallback(false, true);
+            this.prevStateCache = this.state;
+            this.stateDiffEffect = debounce(this.stateDiffEffect, config.wait).bind(this);
         }
         private getStateFromURL(stateList:string[]) {
             const query = location.href.split('?')[1];
@@ -70,7 +74,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             const href = `${locationAddress}?${query}&${restQuery}`;
             location.href = href;
         }
-        private reBindCallback() {
+        private reBindCallback(diffIgnore:boolean = true, callBackIgnore?:boolean) {
             this.callbackName = this.callbackName || callbackName;            
             if (this.callbackName == null) {
                 return;
@@ -81,17 +85,15 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             }
             const clone = Object.create(this);
             clone.setState = (updater, callback) => {
-                this.setState(updater, callback, true);
+                this.setState(updater, callback, diffIgnore, callBackIgnore);
             }
             // super[callbackName] is super.prototype[callbackName], so it is not bound with _super.
             this[this.callbackName] = super[this.callbackName].bind(clone);
             this.callbackDeps = this.callbackDeps || config.callbackDeps;
         }
         componentDidMount() {
-            const result = super.componentDidMount();
-            this.prevStateCache = this.state;
-            this.reBindCallback();
-            this.stateDiffEffect = debounce(this.stateDiffEffect, config.wait).bind(this);
+            const result = super.componentDidMount();            
+            this.reBindCallback();            
             return result;
         }
         componentDidUpdate(prevProps, prevState) {
@@ -121,8 +123,13 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             if (isDiff) {
                 this.syncStateToURL(pickedState);
             }
+
+            if (this.state[__SYNC_QUERY_CALLBACK_IGNORE__] === true) {
+                console.warn('Ingore: sync-query: auto trigger callback，only after ComponentDidMount');
+                return;
+            }
             // callbackDeps diff
-            const callbackDeps = this.callbackDeps;            
+            const callbackDeps = this.callbackDeps;
             if (callbackDeps == null) {
                 isDiff && this[this.callbackName] && typeof this[this.callbackName] === 'function' && this[this.callbackName]();
             } else {
@@ -133,13 +140,14 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             }
             this.prevStateCache = state;
         }
-        setState(updater, callback?:() => void, diffIgnore?:boolean) {
+        setState(updater, callback?:() => void, diffIgnore?:boolean, callBackIgnore?:boolean) {
             // Ref: https://zh-hans.reactjs.org/docs/react-component.html#setstate
             if (typeof updater === 'object') {
                 return super.setState(
                     {
                         ...updater,
                         [__SYNC_QUERY_DIFF_IGNORE__]: diffIgnore,
+                        [__SYNC_QUERY_CALLBACK_IGNORE__]: callBackIgnore,
                     },
                     callback,
                 );
@@ -150,6 +158,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
                         return {
                             ...updater(state, props),
                             [__SYNC_QUERY_DIFF_IGNORE__]: diffIgnore,
+                            [__SYNC_QUERY_CALLBACK_IGNORE__]: callBackIgnore,
                         }
                     },
                     callback,

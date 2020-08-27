@@ -35,10 +35,11 @@ Once we did this, there are powerful features below.
 
 ## Feature
 
-- auto synchronize react state to url query (URLSearchParam)
+- auto store react state in url query (URLSearchParam)
 - auto call 'fetch' if react state is detected change.
 - auto init react state from url query (URLSearchParam)
 - zero dependency, only 2.8kb gzipped size.
+- support TypeScript decorator
 
 ## Installation
 
