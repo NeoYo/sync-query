@@ -1,5 +1,5 @@
-import { queryToState, parseParam, stateToQuery } from "../../src/helpers/convert";
-import { parseQuery } from "../../src/helpers/url";
+import { queryToState, parseParam, stateToQuery } from "../convert";
+import { parseQuery } from "../url";
 
 // parseParam
 test('parseParam', () => {

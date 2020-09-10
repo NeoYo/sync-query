@@ -1,4 +1,4 @@
-import { isArray, isObject, isString, isFunction } from "../../src/helpers/type";
+import { isArray, isObject, isString, isFunction } from "../type";
 
 test('isArray', () => {
     expect(isArray([])).toBe(true);

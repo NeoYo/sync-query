@@ -23,7 +23,7 @@ export function SyncQueryFactory(stateList: string[], callbackName?:string, conf
 }
 
 type SyncQueryConfig = {
-    wait: number,                           // 函数防抖的等待时间， 单位 ms
+    wait?: number,                          // 函数防抖的等待时间， 单位 ms
     callbackDeps?: string[],                // callbackDeps 存放 state key 的数组，监听到 state 中对应key 的 value 变化时，会调用 callback（网络请求等）
                                             // PS: callbackDeps 没有传入时，默认监听的内容等于 stateList
     parser?: IQueryParser,                  // 解析器：用于将路由参数 query 解析到 state，默认是 JSON.parse

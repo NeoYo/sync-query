@@ -92,7 +92,7 @@ export const MyComponentEnhance =
 
 > 注意: SyncQueryFactory 装饰器工厂 和 syncQueryHOC 要放在离 MyComponent 最近的位置
 
-## 说明
+## 其他说明
 
 ### 手动同步
 
@@ -121,7 +121,7 @@ class MyComponent extends Component {
                     current,
                 },
             },
-            (this as SyncQueryHost).triggerSync
+            (this as any).triggerSync
         );
     }
 }

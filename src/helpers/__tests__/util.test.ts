@@ -1,5 +1,5 @@
-import { pick, debounce, filter, map } from "../../src/helpers/util";
-import { deepEqual } from "../../src/helpers/deepEqual";
+import { pick, debounce, filter, map } from "../util";
+import { deepEqual } from "../deepEqual";
 
 test('pick', () => {
     const src = {
