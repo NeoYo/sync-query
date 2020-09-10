@@ -3,12 +3,12 @@
 
   ❄️
 
-  Use the React higher-order component to store the React State in URL query (routing parameters)
+  使用 React 高阶组件，实现将 React state 存储在 URL query
 </div>
 
 <hr />
 
-[中文](./README-zh.md)
+[English](./README-English.md)
 
 ## Demo
 
@@ -16,9 +16,9 @@
 
 ![](./gif/autoCall.gif)
 
-^_^ This is demo of using sync-query in antd-design.
+^_^ 这是一个在 antd-design 里使用该库的实例
 
-There is only three lines of code.
+只需要 3 行代码！
 
 ```js
 // import
@@ -29,39 +29,38 @@ const MyComponentEnhance = syncQueryHOC(MyComponent, ['searchInput', 'pagination
 //...
 ```
 
-[More about the Demo](https://github.com/NeoYo/sync-query/tree/master/examples/antd/antd-demo)
+[更多关于这个例子，请点击这里](https://github.com/NeoYo/sync-query/tree/master/examples/antd/antd-demo)
 
-Once we did this, there are powerful features below.
+一旦我们这样做了，就拥有了下面使用的功能。
 
-## Feature
+## 基础功能
 
-- auto store react state in url query (URLSearchParam)
-- auto call 'fetch' if react state is detected change.
-- auto init react state from url query (URLSearchParam)
-- zero dependency, only 2.8kb gzipped size.
-- support TypeScript decorator
+- 自动同步 react state 到 url query (URLSearchParam)
+- 自动调用回调函数（比如网络请求等），当 react state 发生变化时.
+- 自动从 url query (URLSearchParam)，初始化 react state 
+- [零依赖](./PREF.md)，只有 2.8kb gzipped 大小
 
-## Installation
+## 安装
 
 `yarn add sync-query`
 
 `npm i --save sync-query`
 
-## Usage
+## 使用说明
 
 ### Use TypeScript Decorator
 
 ```typescript
 import { SyncQueryFactory, syncQueryCb } from "sync-query";
 
-@SyncQueryFactory(['searchInput', 'pagination']) // Listen to searchInput or Pagination changes when synchronized to URL Query
+@SyncQueryFactory(['searchInput', 'pagination']) // 监听到 searchInput 或 pagination 变化时同步到 URL query
 export class MyComponent extends Component {
     this.state = {
         searchInput: 'hello world',
         pagination: {
         },
     }
-    @syncQueryCb(['searchInput']) // The fetch function is called to listen for a change in searchInput
+    @syncQueryCb(['searchInput']) // 监听到 searchInput 变化时调用 fetch 函数
     fetch() {
         // network fetch...
     }
@@ -82,61 +81,96 @@ export class MyComponent extends Component {
 export const MyComponentEnhance = 
     syncQueryHOC(
         MyComponent,
-        ['searchInput', 'pagination'], // Listen to searchInput or Pagination changes when synchronized to URL Query
+        ['searchInput', 'pagination'], // 监听到 searchInput 或 pagination 变化时同步到 URL query
         'fetch',
         {
-            callbackDeps: ['searchInput'], // The fetch function is called to listen for a change in searchInput
-            wait: 600, // debounce，600ms
+            callbackDeps: ['searchInput'], // 监听到 searchInput 变化时调用 fetch 函数
+            wait: 600, // 函数防抖，600ms
         }
     );
 ```
 
-> Note: The SyncQueryFactory decorator factory and syncQueryHOC are placed closest to the MyComponent
+> 注意: SyncQueryFactory 装饰器工厂 和 syncQueryHOC 要放在离 MyComponent 最近的位置
+
+## 说明
+
+### 手动同步
+
+该库会自动存储 state 到 url query，同时触发 callback 函数
+
+关闭的方法是，在类装饰器配置中增加 `disableAutoSync`
+
+手动同步的方法是 `(this as SyncQueryHost).triggerSync)`
+
+示例代码如下：
+
+```typescript
+@SyncQueryFactory(
+    ['pagination', 'searchInput'],
+    'fetch',
+    {
+        disableAutoSync: true
+    }
+)
+class MyComponent extends Component {
+    onHandlePageChange(current) {
+        this.setState(
+            {
+                pagination: {
+                    ...this.state.pagination,
+                    current,
+                },
+            },
+            (this as SyncQueryHost).triggerSync
+        );
+    }
+}
+```
 
 ## API
 
 ### syncQueryHOC
 
-Receive a React component that returns a component with the ability to synchronize state to routing parameters
+接收一个 React 组件，返回带有同步 state 到路由参数功能的组件
 
 syncQueryHOC(WrappedComponent, stateList: string[], callbackName?:string, config?:SyncQueryConfig): EnhanceComponent
 
-- WrappedComponent: The original component is decorated
-- stateList: Pass an array, and the value of the state corresponding to the key will be listened to
-- callbackName?: The effect method is triggered when changes are heard
+- WrappedComponent: 被装饰的原始组件
+- stateList: 传一个数组，state 中对应 key 的值会被监听
+- callbackName?: 监听到变化时，触发 effect 方法
 - config?: SyncQueryConfig
     ```typescript
     type SyncQueryConfig = {
-        wait: number,                           // The wait time for the debounce,， the unit is ms
-        callbackDeps?: string[],                // CallbackDeps holds an array of state keys. When the value of the corresponding key in the state changes, the callback (network request, etc.) will be called.
-                                                // When callbackDeps is not passed in, the default listener is equal to stateList
-        parser?: IQueryParser,                  // Parser: Used to parse the routing parameter query to state. Default is JSON.parse
-        stringify?: IQueryStringify,            // Generator: Used to generate the query string corresponding to state. Default is JSON.Stringify
+        wait: number,                           // 函数防抖的等待时间， 单位 ms
+        callbackDeps?: string[],                // callbackDeps 存放 state key 的数组，监听到 state 中对应key 的 value 变化时，会调用 callback（网络请求等）
+                                                // callbackDeps 没有传入时，默认监听的内容等于 stateList
+        parser?: IQueryParser,                  // 解析器：用于将路由参数 query 解析到 state，默认是 JSON.parse
+        stringify?: IQueryStringify,            // 生成器：用于生成 state 对应的 query 字符串，默认是 JSON.stringify
     }
     ```
 
 ### SyncQueryFactory
 
-SyncQueryFactory is a Decorator Factory, used in Typescript
+SyncQueryFactory 装饰器工厂， 在 typescript 中使用
 
 SyncQueryFactory(stateList: string[], callbackName?:string, config?:SyncQueryConfig) 
 
-> Note that a class decorator factory, SyncQueryFactory, and a method decorator, syncQueryCb, can be used together. SyncQueryHOC, a higher-order component, and the first two should be avoided as much as possible.
+> 注意 类装饰器工厂 SyncQueryFactory 和 方法装饰器 syncQueryCb 可以配合使用， 高阶组件 syncQueryHOC 与前两者尽量避免共用。
 
-- stateList: Pass an array, and the value of the state corresponding to the key will be listened to
-- callbackName?: The 'callbackName' method is triggered when a change is heard
+- stateList: 传一个数组，state 中对应 key 的值会被监听
+- callbackName?: 监听到变化时，触发 effect 方法
 - config?: SyncQueryConfig
     ```typescript
     type SyncQueryConfig = {
-        wait: number,                           // The wait time for the debounce,， the unit is ms
-        callbackDeps?: string[],                // CallbackDeps holds an array of state keys. When the value of the corresponding key in the state changes, the callback (network request, etc.) will be called.
-                                                // When callbackDeps is not passed in, the default listener is equal to stateList
-        parser?: IQueryParser,                  // Parser: Used to parse the routing parameter query to state. Default is JSON.parse
-        stringify?: IQueryStringify,            // Generator: Used to generate the query string corresponding to state. Default is JSON.Stringify
+        wait: number,                           // 函数防抖的等待时间， 单位 ms
+        callbackDeps?: string[],                // callbackDeps 存放 state key 的数组，监听到 state 中对应key 的 value 变化时，会调用 callback（网络请求等）
+                                                // callbackDeps 没有传入时，默认监听的内容等于 stateList
+        parser?: IQueryParser,                  // 解析器：用于将路由参数 query 解析到 state，默认是 JSON.parse
+        stringify?: IQueryStringify,            // 生成器：用于生成 state 对应的 query 字符串，默认是 JSON.stringify
     }
     ```
 
-SyncQueryFactory Code is as follows:
+代码实现如下：
 
 ```typescript
 function SyncQueryFactory(stateList: string[], callbackName?:string, config?:SyncQueryConfig) {
@@ -148,21 +182,21 @@ function SyncQueryFactory(stateList: string[], callbackName?:string, config?:Syn
 
 ### syncQueryCb
 
-The syncQueryCb is a method decorator, used in conjunction with the SyncQueryFactory
+syncQueryCb 方法装饰器，与 SyncQueryFactory 配合使用
 
 syncQueryCb(callbackDeps?:string[])
 
-- callbackDeps?: string[]  CallbackDeps holds an array of state keys. When the value of the corresponding key in the state changes, the callback (network request, etc.) will be called.
+- callbackDeps?: string[]  callbackDeps 存放 state key 的数组，监听到 state 中对应key 的 value 变化时，会调用 callback（网络请求等）
 
-Examples： 
+使用示例： 
 
 ```typescript
 import { SyncQueryFactory, syncQueryCb } from "sync-query";
 
-@SyncQueryFactory(['searchInput', 'pagination']) // Listen to searchInput or Pagination changes when synchronized to URL Query
+@SyncQueryFactory(['searchInput', 'pagination']) // 监听到 searchInput 或 pagination 变化时同步到 URL query
 export class MyComponent extends Component {
 
-    @syncQueryCb(['searchInput']) // The fetch function is called to listen for a change in searchInput
+    @syncQueryCb(['searchInput']) // 监听到 searchInput 变化时调用 fetch 函数
     fetch() {
         // network fetch...
     }

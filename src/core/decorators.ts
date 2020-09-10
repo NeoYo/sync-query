@@ -28,6 +28,11 @@ type SyncQueryConfig = {
                                             // PS: callbackDeps 没有传入时，默认监听的内容等于 stateList
     parser?: IQueryParser,                  // 解析器：用于将路由参数 query 解析到 state，默认是 JSON.parse
     stringify?: IQueryStringify,            // 生成器：用于生成 state 对应的 query 字符串，默认是 JSON.stringify
+    disableAutoSync?: boolean,              // 是否关闭自动同步
+}
+
+export interface SyncQueryHost {
+    triggerSync
 }
 
 /**
@@ -58,6 +63,11 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             }
             this.reBindCallback(false, true);
             this.prevStateCache = this.state;
+            if (config.disableAutoSync === true) {
+                this.triggerSync = () => {
+                    this.stateDiffEffect(this.state);
+                }
+            }
             this.stateDiffEffect = debounce(this.stateDiffEffect, config.wait).bind(this);
         }
         private getStateFromURL(stateList:string[]) {
@@ -97,7 +107,7 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             return result;
         }
         componentDidUpdate(prevProps, prevState) {
-            if (this.state[__SYNC_QUERY_DIFF_IGNORE__] === true) {
+            if (this.state[__SYNC_QUERY_DIFF_IGNORE__] === true || config.disableAutoSync === true) {
                 return (
                     super.componentDidUpdate &&
                     super.componentDidUpdate(prevProps, prevState)
