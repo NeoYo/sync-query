@@ -100,14 +100,16 @@ export const MyComponentEnhance =
 
 关闭的方法是，在类装饰器配置中增加 `disableAutoSync`
 
-手动同步的方法是 `(this as SyncQueryHost).triggerSync)`
+手动同步的方法是 `(this as SyncQueryHost).triggerSync)`,
+
+`triggerSync` 该方法的调用，会同步state到路由参数
 
 示例代码如下：
 
 ```typescript
 @SyncQueryFactory(
     ['pagination', 'searchInput'],
-    'fetch',
+    null,
     {
         disableAutoSync: true
     }
@@ -121,8 +123,12 @@ class MyComponent extends Component {
                     current,
                 },
             },
-            (this as any).triggerSync
+            this.fetchTable
         );
+    }
+    fetchTable() {
+        (this as any).triggerSync();
+        // fetch network...
     }
 }
 ```
