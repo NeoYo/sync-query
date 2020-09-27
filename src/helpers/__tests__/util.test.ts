@@ -1,4 +1,4 @@
-import { pick, debounce, filter, map } from "../util";
+import { pick, debounce, filter, map, filterExist } from "../util";
 import { deepEqual } from "../deepEqual";
 
 test('pick', () => {
@@ -25,6 +25,13 @@ test('filter', () => {
         f: false,
     }; 
     expect(filter(obj)).toStrictEqual({
+        a: 1,
+        b: 2,
+        d: '',
+        e: 0,
+        f: false,
+    });
+    expect(filterExist(obj)).toStrictEqual({
         a: 1,
         b: 2,
         d: '',

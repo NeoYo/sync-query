@@ -36,11 +36,7 @@ function notNull(tarket, key, obj) {
 }
 
 function exist(tarket, key, obj) {
-    if (typeof obj[key] == 'boolean') {
-        return true;
-    } else {
-        return Boolean(obj[key]);
-    }
+    return obj[key] != null;
 }
 
 export function filterExist(obj:Object) {
