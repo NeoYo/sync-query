@@ -37,8 +37,8 @@ const MyComponentEnhance = syncQueryHOC(MyComponent, ['searchInput', 'pagination
 
 - 自动同步 react state 到 url query (URLSearchParam)
 - 自动调用回调函数（比如网络请求等），当 react state 发生变化时.
-- 自动从 url query (URLSearchParam)，初始化 react state 
-- [零依赖](./PREF.md)，只有 2.8kb gzipped 大小
+- 自动从 url query (URLSearchParam) ，初始化 react state 
+- [零依赖](./PREF.md)，只有 2.8kb gzipped 大小 （[查看JS体积优化过程](./PREF.md)）
 
 ## 安装
 

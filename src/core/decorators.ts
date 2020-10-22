@@ -102,8 +102,8 @@ export function syncQueryHOC(WrappedComponent, stateList: string[], callbackName
             this.callbackDeps = this.callbackDeps || config.callbackDeps;
         }
         componentDidMount() {
-            const result = super.componentDidMount();            
-            this.reBindCallback();            
+            const result = super.componentDidMount && super.componentDidMount();
+            this.reBindCallback();
             return result;
         }
         componentDidUpdate(prevProps, prevState) {
