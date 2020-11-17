@@ -133,6 +133,8 @@ class MyComponent extends Component {
 }
 ```
 
+> 注意： (this as any).triggerSync() 要在 componentDidMount 和之后的声明周期才被初始化。
+
 ## API
 
 ### syncQueryHOC
