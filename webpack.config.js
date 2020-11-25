@@ -7,7 +7,7 @@ const isDev = process.env.NODE_ENV === 'dev';
 const isStat = process.env.NODE_ENV === 'stat';
 
 const config = {
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'source-map',
   mode: isDev ?  'development' : 'production',
   entry: {
     app: './src/index.ts'
