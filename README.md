@@ -3,12 +3,16 @@
 
   ❄️
 
-  使用 React 高阶组件，实现将 React state 存储在 URL query
+  使用 React 高阶组件，实现将 React state 自动同步到 URL query 
 </div>
 
 <hr />
 
 [English](./README-English.md)
+
+## 使用场景
+
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/837cc0c049494d61ba74fcea3ea95e2f~tplv-k3u1fbpfcp-watermark.image)
 
 ## Demo
 
@@ -40,6 +44,7 @@ const MyComponentEnhance = syncQueryHOC(MyComponent, ['searchInput', 'pagination
 - 自动从 url query (URLSearchParam) ，初始化 react state 
 - [零依赖](./PREF.md)，只有 2.8kb gzipped 大小 （[查看JS体积优化过程](./PREF.md)）
 
+- 支持 TypeScript 装饰器 [核心代码](./src/core/decorators.ts)
 ## 安装
 
 `yarn add sync-query`

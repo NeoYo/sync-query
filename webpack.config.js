@@ -7,6 +7,10 @@ const isDev = process.env.NODE_ENV === 'dev';
 const isStat = process.env.NODE_ENV === 'stat';
 
 const config = {
+  optimization: {
+    // minimize 压缩代码
+    minimize: false,
+  },
   devtool: 'source-map',
   mode: isDev ?  'development' : 'production',
   entry: {
