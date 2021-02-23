@@ -3,18 +3,30 @@
 
   ❄️
 
-  使用 React 高阶组件，实现将 React state 自动同步到 URL query 
+  使用 React 高阶组件 和 ES6继承，实现将 React state 自动同步到 URL query 
 </div>
 
 <hr />
 
 [English](./README-English.md)
 
-## 使用场景
+## 需求场景
+
+在后台管理中，界面常常会有几个筛选条件，在输入框填写、下拉框选择等，在填写完时，将服务端的数据拉取展示在表格中。如下图所示:
+
+![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/914599a657cc44c9861e1f1b2b41b1d8~tplv-k3u1fbpfcp-watermark.image)
+
+把填写的信息，保存到网址路由参数。那么分享的网址，就带了输入信息，这是比较方便的方式。
+
+每个筛选条件输入值修改，触发路由参数更新。
+
+当进入界面时，从路由参数获取 React state 的初始值。
+
+实现如下图所示:
 
 ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/837cc0c049494d61ba74fcea3ea95e2f~tplv-k3u1fbpfcp-watermark.image)
 
-## Demo
+## 快手上手
 
 ![](./gif/syncToQuery.gif)
 
@@ -36,6 +48,14 @@ const MyComponentEnhance = syncQueryHOC(MyComponent, ['searchInput', 'pagination
 [更多关于这个例子，请点击这里](https://github.com/NeoYo/sync-query/tree/master/examples/antd/antd-demo)
 
 一旦我们这样做了，就拥有了下面使用的功能。
+
+## 实现原理
+
+![](https://s3.ax1x.com/2021/02/23/yLklF0.png)
+
+- 在界面初始化时，从 URL query param 获取参数，初始化 this.state
+- 在每次 componentDidUpdate 时，深对比 state，同步到 URL query param
+- 这部分功能，实际上是每个界面独立的，通过 ES6 继承，提取到 父类
 
 ## 基础功能
 
