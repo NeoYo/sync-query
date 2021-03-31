@@ -32,9 +32,9 @@
 
 ## 快手上手
 
-![](./gif/syncToQuery.gif)
+![](https://ae01.alicdn.com/kf/Ude8ccc24d81a43c9b893883e184559acC.jpg)
 
-![](./gif/autoCall.gif)
+![](https://ae01.alicdn.com/kf/U89af580f9d93419cbab4ac55ae16a0d01.jpg)
 
 ^_^ 这是一个在 antd-design 里使用该库的实例
 
