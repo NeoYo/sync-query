@@ -10,26 +10,6 @@
 
 [English](./README-English.md)
 
-## 需求场景
-
-在后台管理中，界面常常会有几个筛选条件，在输入框填写、下拉框选择等，在填写完时，将服务端的数据拉取展示在表格中。
-
-把填写的信息，保存到网址路由参数。那么分享的网址，就带了输入信息，这是比较方便的方式。
-
-每个筛选条件输入值修改，触发路由参数更新。
-
-当进入界面时，从路由参数获取 React state 的初始值。
-
-实现如下图所示:
-
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/914599a657cc44c9861e1f1b2b41b1d8~tplv-k3u1fbpfcp-watermark.image)
-
-代码实现原理如下图：
-
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/837cc0c049494d61ba74fcea3ea95e2f~tplv-k3u1fbpfcp-watermark.image)
-
-该库的意义，在于把这部分逻辑，抽离封装出来，与每个界面自己的逻辑解耦
-
 ## 快手上手
 
 ![](https://ae01.alicdn.com/kf/Ude8ccc24d81a43c9b893883e184559acC.jpg)
@@ -239,6 +219,26 @@ export class MyComponent extends Component {
     }
 }
 ```
+
+## 需求场景
+
+在后台管理中，界面常常会有几个筛选条件，在输入框填写、下拉框选择等，在填写完时，将服务端的数据拉取展示在表格中。
+
+把填写的信息，保存到网址路由参数。那么分享的网址，就带了输入信息，这是比较方便的方式。
+
+每个筛选条件输入值修改，触发路由参数更新。
+
+当进入界面时，从路由参数获取 React state 的初始值。
+
+实现如下图所示:
+
+![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/914599a657cc44c9861e1f1b2b41b1d8~tplv-k3u1fbpfcp-watermark.image)
+
+代码实现原理如下图：
+
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/837cc0c049494d61ba74fcea3ea95e2f~tplv-k3u1fbpfcp-watermark.image)
+
+该库的意义，在于把这部分逻辑，抽离封装出来，与每个界面自己的逻辑解耦
 
 ## License
 
