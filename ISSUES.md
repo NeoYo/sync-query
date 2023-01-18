@@ -1,3 +1,15 @@
+# Error: error:0308010C:digital envelope routines::unsupported
+
+```bash
+nvm i v16
+nvm use v16.x.x
+npm i
+npm build
+```
+
+Ref: https://stackoverflow.com/a/69699772/8961754
+
+
 #  何时开始监听
 
 - 实际遇到的问题是：首次操作，突然又发起请求，刷新界面
